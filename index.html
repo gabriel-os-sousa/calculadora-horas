@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora Educacional de Jornada</title>
+  <meta name="description" content="Ferramenta educativa para calcular horários de estudo ou atividades com pausas.">
+  <meta name="keywords" content="educacional, estudo, jornada, cálculo, horário, intervalo">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #f4f4f4;
+    }
+    h1 {
+      color: #333;
+    }
+    label, input {
+      display: block;
+      margin-bottom: 1rem;
+    }
+    input[type="time"] {
+      padding: 0.5rem;
+      width: 200px;
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      background: #a10505;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: #fff;
+      border-left: 5px solid #a10505;
+    }
+  </style>
+</head>
+<body>
+  <h1>Calculadora de Saída - Jornada de Trabalho</h1>
+  <label for="entrada">Hora de entrada:</label>
+  <input type="time" id="entrada">
+
+  <label for="inicioIntervalo">Início do intervalo:</label>
+  <input type="time" id="inicioIntervalo">
+
+  <label for="fimIntervalo">Término do intervalo:</label>
+  <input type="time" id="fimIntervalo">
+
+  <button onclick="calcularSaida()">Calcular horário de saída</button>
+
+  <div class="result" id="resultado"></div>
+
+  <script>
+    function calcularSaida() {
+      const entrada = document.getElementById('entrada').value;
+      const inicioIntervalo = document.getElementById('inicioIntervalo').value;
+      const fimIntervalo = document.getElementById('fimIntervalo').value;
+
+      if (!entrada || !inicioIntervalo || !fimIntervalo) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      const [hEntrada, mEntrada] = entrada.split(":").map(Number);
+      const [hIni, mIni] = inicioIntervalo.split(":").map(Number);
+      const [hFim, mFim] = fimIntervalo.split(":").map(Number);
+
+      const msEntrada = new Date(0, 0, 0, hEntrada, mEntrada).getTime();
+      const msIni = new Date(0, 0, 0, hIni, mIni).getTime();
+      const msFim = new Date(0, 0, 0, hFim, mFim).getTime();
+
+      const tempoIntervalo = msFim - msIni;
+
+      const seisHoras = 6 * 60 * 60 * 1000;
+      const oitoHoras = 8 * 60 * 60 * 1000;
+
+      const saida6h = new Date(msEntrada + seisHoras + tempoIntervalo);
+      const saida8h = new Date(msEntrada + oitoHoras + tempoIntervalo);
+
+      const formatarHora = d => d.toTimeString().slice(0,5);
+
+      const minutosIntervalo = Math.floor(tempoIntervalo / 60000);
+      const horas = Math.floor(minutosIntervalo / 60);
+      const minutos = minutosIntervalo % 60;
+      const textoIntervalo = `${horas > 0 ? horas + 'h ' : ''}${minutos}min`;
+
+      document.getElementById('resultado').innerHTML = `
+        <p><strong>Duração do intervalo:</strong> ${textoIntervalo}</p>
+        <p><strong>Saída mínima (6h + intervalo):</strong> ${formatarHora(saida6h)}</p>
+        <p><strong>Saída limite (8h + intervalo):</strong> ${formatarHora(saida8h)}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
